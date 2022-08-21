@@ -54,7 +54,6 @@ void select(const std::string serviceName, IServiceManager * serviceManager) {
     std::string command;
     DWORD status = 0;
     const unsigned int timeoutMs = 30000;
-    std::cout << "ggg" << std::endl;
     while (getline(std::cin, command)) {
         if (command == "status") {
             serviceManager->GetStatus(&status);
