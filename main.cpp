@@ -3,8 +3,8 @@
 #include <comdef.h>  
 #include <objbase.h>
 #include <initguid.h>
-#include "ServiceManagerObject.h"
 #include "ServiceManagerFactory.h"
+#include "ServiceManagerObject.h"
 #include "ListServices.h"
 
 std::string serviceStatusToString(DWORD status) {
@@ -41,13 +41,20 @@ void list() {
 }
 
 void select(const std::string serviceName, IServiceManager * serviceManager) {
-    std::string command;
-    if (serviceManager->SetService(reinterpret_cast<const unsigned char*>(serviceName.c_str()), SERVICE_ALL_ACCESS) != S_OK) {
-        std::cout << "Service can't be managed" << std::endl;
+    if (!serviceManager) {
+        std::cout << "Service manager can not be null" << std::endl;
         return;
     }
+    serviceManager->AddRef();
+    if (serviceManager->SetService(reinterpret_cast<const unsigned char*>(serviceName.c_str()), SERVICE_ALL_ACCESS) != S_OK) {
+        std::cout << "Service can't be managed" << std::endl;
+        serviceManager->Release();
+        return;
+    }
+    std::string command;
     DWORD status = 0;
     const unsigned int timeoutMs = 30000;
+    std::cout << "ggg" << std::endl;
     while (getline(std::cin, command)) {
         if (command == "status") {
             serviceManager->GetStatus(&status);
@@ -96,9 +103,15 @@ void select(const std::string serviceName, IServiceManager * serviceManager) {
         else if (command == "unselect")
             break;
     }
+    serviceManager->Release();
 }
 
 void readInput(IServiceManager * serviceManager) {
+    if (!serviceManager) {
+        std::cout << "Service manager can not be null" << std::endl;
+        return;
+    }
+    serviceManager->AddRef();
     std::string command;
     while (getline(std::cin, command)) {
         if (command == "list") 
@@ -108,6 +121,7 @@ void readInput(IServiceManager * serviceManager) {
     }
     if (!std::cin.eof())
         std::cout << "Smth went wrong." << std::endl;
+    serviceManager->Release();
 }
 
 
@@ -120,7 +134,7 @@ int main() {
         CLSID_ServiceManagerObject,  
         factory,
         CLSCTX_INPROC_SERVER,      
-        REGCLS_MULTIPLEUSE,
+        REGCLS_SINGLEUSE,
         &dwCookie               
     );
     if (res != S_OK) {
@@ -134,12 +148,10 @@ int main() {
     if (FAILED(hr)) {
         std::cout << "Can not create instance of COM object" << std::endl;
         factory->Release();
-        if (serviceManager)
-            serviceManager->Release();
         return 0;
     }
     readInput(serviceManager);
-    serviceManager->Release();
+    CoRevokeClassObject(dwCookie);
     factory->Release();
     CoUninitialize();
     return 0;

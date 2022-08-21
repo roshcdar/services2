@@ -18,7 +18,7 @@ HRESULT __stdcall ServiceManagerObject::SetService(const unsigned char* name, DW
         srvHandle = ::OpenService(scHandle, namePtr, access);
         if (!srvHandle)
             scHandle = nullptr;
-        else
+        else 
             srvName = std::string(namePtr);
     }
     if (srvHandle)
