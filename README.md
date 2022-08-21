@@ -1,6 +1,6 @@
 # Services
 
-Commands:
+Commands: <br/>
 list - list all services <br/>
 select service_name - choose service to open <br/>
 start - start service <br/>
