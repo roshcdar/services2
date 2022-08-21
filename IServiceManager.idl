@@ -1,0 +1,16 @@
+import "unknwn.idl";
+
+[
+	object,
+	uuid(585f68f9-b9d4-4d3c-98b8-cc6ab18d5865),
+] interface IServiceManager : IUnknown
+{
+    HRESULT SetService([in] const char * name, [in] DWORD access);
+    HRESULT GetStatus([out, retval] DWORD * status);
+    HRESULT Start(void);
+    HRESULT Stop(void);
+    HRESULT Pause(void);
+    HRESULT Continue(void);
+    HRESULT Delete(void);
+    HRESULT WaitForStatus([in] const DWORD desiredStatus, [in] const unsigned int timeoutMs);
+};
