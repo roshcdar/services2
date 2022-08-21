@@ -3,6 +3,7 @@
 #include <comdef.h>  
 #include <objbase.h>
 #include <initguid.h>
+#include <codecvt>
 #include "ServiceManagerFactory.h"
 #include "ServiceManagerObject.h"
 #include "ListServices.h"
@@ -31,8 +32,6 @@ void list() {
         std::cout << "--------------------------" << std::endl;
     for (auto const& s : services)
     {
-        std::wstring serviceName(s.ServiceName.begin(), s.ServiceName.end());
-        std::wstring displayName(s.DisplayName.begin(), s.DisplayName.end());
         std::cout << "Service name:  " << s.ServiceName << std::endl;
         std::cout << "Display name:  " << s.DisplayName << std::endl;
         printStatus(s.Status.dwCurrentState);
